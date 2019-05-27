@@ -10,9 +10,9 @@ func TestUnmarshalJSON(t *testing.T) {
 	asrt := assert.New(t)
 
 	type testInputJSON struct {
-		A int `json:"a"`
-		B string `json:"b"`
-		C bool `json:"c"`
+		A          int                    `json:"a"`
+		B          string                 `json:"b"`
+		C          bool                   `json:"c"`
 		XXXUnknown map[string]interface{} `json:"-"`
 	}
 	var testInput testInputJSON
@@ -29,9 +29,9 @@ func TestMarshalJSON(t *testing.T) {
 	asrt := assert.New(t)
 
 	type testOutputJSON struct {
-		A int `json:"a"`
-		B string `json:"b"`
-		C bool `json:"c"`
+		A          int                    `json:"a"`
+		B          string                 `json:"b"`
+		C          bool                   `json:"c"`
 		XXXUnknown map[string]interface{} `json:"-"`
 	}
 	testOutput := testOutputJSON{

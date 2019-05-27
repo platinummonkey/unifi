@@ -73,11 +73,16 @@ func (c *Client) Login(username string, password string, remember bool) error {
 		return fmt.Errorf("unable to login, response code: %s", loginResponse.Meta.ResponseCode)
 	}
 	c.authCookies = resp.Cookies()
+	c.longRunningSession = remember
 	return nil
 }
 
 // Logout destroys the sever side session id which will make future attempts with that cookie fail
 func (c *Client) Logout() error {
+	if !c.longRunningSession {
+		// nothing to do, this will be invalid
+		return nil
+	}
 	return c.doRequest(http.MethodGet, "/api/logout", nil, &LoginResponse{})
 }
 

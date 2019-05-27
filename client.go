@@ -11,6 +11,8 @@ import (
 	"path"
 	"reflect"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Client is the object that handles talking to the Unifi Controller API. This maintains
@@ -24,7 +26,8 @@ type Client struct {
 	HttpClient   *http.Client
 	RetryTimeout time.Duration
 
-	authCookies []*http.Cookie
+	authCookies        []*http.Cookie
+	longRunningSession bool
 }
 
 func NewClient(baseURL string, disableCertificateCheck bool) (*Client, error) {
@@ -133,12 +136,12 @@ func (c *Client) doRequest(method string, extPath string, sendBody io.Reader, re
 	if !rv.IsNil() {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return InvalidResponseBody
+			return errors.Wrap(err, InvalidResponseBody.Error())
 		}
 
 		err = json.Unmarshal(body, ret)
 		if err != nil {
-			return JSONDecodeError
+			return errors.Wrap(err, JSONDecodeError.Error())
 		}
 
 		if retRespCodeTrait, ok := ret.(ResponseCodeTrait); ok {
@@ -146,7 +149,9 @@ func (c *Client) doRequest(method string, extPath string, sendBody io.Reader, re
 			if !rc.Equal(ResponseCodeOK) {
 				if retRespCodeMsgTrait, ok := ret.(ResponseMessageTrait); ok {
 					msg := retRespCodeMsgTrait.GetResponseMessage()
-					return fmt.Errorf(msg)
+					if msg != "" {
+						return fmt.Errorf(msg)
+					}
 				}
 				return fmt.Errorf("non-ok status code: %v - %v", rc, ret)
 			}
