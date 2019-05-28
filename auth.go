@@ -8,25 +8,10 @@ import (
 	"net/http"
 )
 
-type LoginMeta struct {
-	ResponseCode    ResponseCode `json:"rc"`
-	ResponseMessage string       `json:"msg"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
-}
-
 type LoginResponse struct {
-	Meta LoginMeta `json:"meta"`
+	Meta CommonMeta `json:"meta"`
 
 	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (r *LoginResponse) GetResponseCode() ResponseCode {
-	return r.Meta.ResponseCode
-}
-
-func (r *LoginResponse) GetResponseMessage() string {
-	return r.Meta.ResponseMessage
 }
 
 // Login will login the user for making queries
@@ -86,12 +71,6 @@ func (c *Client) Logout() error {
 	return c.doRequest(http.MethodGet, "/api/logout", nil, &LoginResponse{})
 }
 
-type SelfResponseMeta struct {
-	ResponseCode ResponseCode `json:"rc"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
-}
-
 type SelfResponseData struct {
 	AdminID                   string                 `json:"admin_id"`
 	DeviceID                  string                 `json:"device_id"`
@@ -111,25 +90,9 @@ type SelfResponseData struct {
 
 type SelfResponse struct {
 	Data []SelfResponseData `json:"data"` // yes it's an array for some horrible reason.
-	Meta SelfResponseMeta   `json:"meta"`
+	Meta CommonMeta         `json:"meta"`
 
 	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (r *SelfResponse) GetResponseCode() ResponseCode {
-	return r.Meta.ResponseCode
-}
-
-func (r *SelfResponse) GetResponseMessage() string {
-	msg, ok := r.Meta.XXXUnknown["msg"]
-	if !ok {
-		return ""
-	}
-	msgStr, ok := msg.(string)
-	if !ok {
-		return ""
-	}
-	return msgStr
 }
 
 // Self returns the logged in user.

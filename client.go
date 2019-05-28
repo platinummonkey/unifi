@@ -143,20 +143,29 @@ func (c *Client) doRequest(method string, extPath string, sendBody io.Reader, re
 		if err != nil {
 			return errors.Wrap(err, JSONDecodeError.Error())
 		}
+		if rv.Kind() == reflect.Struct {
+			metaField := rv.FieldByName("Meta")
 
-		if retRespCodeTrait, ok := ret.(ResponseCodeTrait); ok {
-			rc := retRespCodeTrait.GetResponseCode()
-			if !rc.Equal(ResponseCodeOK) {
-				if retRespCodeMsgTrait, ok := ret.(ResponseMessageTrait); ok {
-					msg := retRespCodeMsgTrait.GetResponseMessage()
-					if msg != "" {
-						return fmt.Errorf(msg)
+			if metaField.IsValid() {
+				if retRespCodeTrait, ok := metaField.Interface().(ResponseCodeTrait); ok {
+					rc := retRespCodeTrait.GetResponseCode()
+					if !rc.Equal(ResponseCodeOK) {
+						if retRespCodeMsgTrait, ok := metaField.Interface().(ResponseMessageTrait); ok {
+							msg := retRespCodeMsgTrait.GetResponseMessage()
+							if msg != "" {
+								return fmt.Errorf(msg)
+							}
+						}
+						return fmt.Errorf("non-ok status code: %v - %v", rc, ret)
 					}
 				}
-				return fmt.Errorf("non-ok status code: %v - %v", rc, ret)
 			}
 		}
 	}
 
 	return nil
+}
+
+func (c *Client) doSiteRequest(method string, siteID string, extPath string, sendBody io.Reader, ret interface{}, queryParamsPairs ...string) error {
+	return c.doRequest(method, fmt.Sprintf("/api/s/%s/%s", siteID, extPath), sendBody, ret, queryParamsPairs...)
 }

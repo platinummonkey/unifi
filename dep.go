@@ -241,3 +241,51 @@ const (
 	ResponseCodeOK    ResponseCode = "ok"
 	ResponseCodeError ResponseCode = "error"
 )
+
+type CommonMeta struct {
+	ResponseCode        ResponseCode `json:"rc"`
+	ResponseCodeMessage string       `json:"msg"`
+	Count               int          `json:"count"`
+
+	XXXUnknown map[string]interface{} `json:"-"`
+}
+
+func (m *CommonMeta) GetResponseCode() ResponseCode {
+	return m.ResponseCode
+}
+
+func (m *CommonMeta) GetResponseMessage() string {
+	return m.ResponseCodeMessage
+}
+
+type GeoCodeData struct {
+	AreaCode      int     `json:"area_code"`
+	City          string  `json:"city"`
+	ContinentCode string  `json:"continent_code"`
+	CountryCode   string  `json:"country_code"`
+	CountryCode3  string  `json:"country_code3"`
+	CountryName   string  `json:"country_name"`
+	DMACode       int     `json:"dma_code"`
+	Latitude      float64 `json:"latitude"`
+	Longitude     float64 `json:"longitude"`
+	PostalCode    string  `json:"postal_code"` // varies based on country
+	Region        string  `json:"region"`
+
+	XXXUnknown map[string]interface{} `json:"-"`
+}
+
+func (g GeoCodeData) MarshalJSON() ([]byte, error) {
+	return MarshalJSON(g)
+}
+
+func (g *GeoCodeData) UnmarshalJSON(data []byte) error {
+	// try to push this out to a map, but if we get a type error, don't bail just set a default
+	// this is sometimes sent as `"false"` or `false` for some horrible reason.
+	var test map[string]interface{}
+	err := json.Unmarshal(data, &test)
+	if err == nil {
+		return UnmarshalJSON(data, g)
+	}
+	*g = GeoCodeData{}
+	return nil
+}

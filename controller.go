@@ -15,18 +15,18 @@ type ControllerStatusMeta struct {
 	XXXUnknown map[string]interface{} `json:"-"`
 }
 
+func (r *ControllerStatusMeta) GetResponseCode() ResponseCode {
+	return r.ResponseCode
+}
+
+func (r *ControllerStatusMeta) GetResponseMessage() string {
+	return r.ResponseCodeMessage
+}
+
 type ControllerStatus struct {
 	Meta ControllerStatusMeta `json:"meta"`
 
 	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (r *ControllerStatus) GetResponseCode() ResponseCode {
-	return r.Meta.ResponseCode
-}
-
-func (r *ControllerStatus) GetResponseMessage() string {
-	return r.Meta.ResponseCodeMessage
 }
 
 // ControllerStatus returns some very basic server information
@@ -35,13 +35,6 @@ func (c *Client) ControllerStatus() (*ControllerStatus, error) {
 	var status ControllerStatus
 	err := c.doRequest(http.MethodGet, "/status", nil, &status)
 	return &status, err
-}
-
-type SitesResponseMeta struct {
-	ResponseCode        ResponseCode `json:"rc"`
-	ResponseCodeMessage string       `json:"msg"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 type SitesResponseData struct {
@@ -59,31 +52,16 @@ type SitesResponseData struct {
 }
 
 type SitesResponse struct {
-	Meta SitesResponseMeta   `json:"meta"`
+	Meta CommonMeta          `json:"meta"`
 	Data []SitesResponseData `json:"data"`
 
 	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (r *SitesResponse) GetResponseCode() ResponseCode {
-	return r.Meta.ResponseCode
-}
-
-func (r *SitesResponse) GetResponseMessage() string {
-	return r.Meta.ResponseCodeMessage
 }
 
 func (c *Client) AvailableSites() (*SitesResponse, error) {
 	var ret SitesResponse
 	err := c.doRequest(http.MethodGet, "/api/self/sites", nil, &ret)
 	return &ret, err
-}
-
-type SitesVerboseResponseMeta struct {
-	ResponseCode        ResponseCode `json:"rc"`
-	ResponseCodeMessage string       `json:"msg"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 type SitesVerboseGatewaySystemStats struct {
@@ -193,18 +171,10 @@ type SitesVerboseResponseData struct {
 }
 
 type SitesVerboseResponse struct {
-	Meta SitesVerboseResponseMeta   `json:"meta"`
+	Meta CommonMeta                 `json:"meta"`
 	Data []SitesVerboseResponseData `json:"data"`
 
 	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (r *SitesVerboseResponse) GetResponseCode() ResponseCode {
-	return r.Meta.ResponseCode
-}
-
-func (r *SitesVerboseResponse) GetResponseMessage() string {
-	return r.Meta.ResponseCodeMessage
 }
 
 func (c *Client) AvailableSitesVerbose() (*SitesVerboseResponse, error) {
@@ -213,25 +183,10 @@ func (c *Client) AvailableSitesVerbose() (*SitesVerboseResponse, error) {
 	return &ret, err
 }
 
-type SiteAdminsMeta struct {
-	ResponseCode    ResponseCode `json:"rc"`
-	ResponseMessage string       `json:"msg"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
-}
-
 type SiteAdminsResponse struct {
-	Meta SiteAdminsMeta `json:"meta"`
+	Meta CommonMeta `json:"meta"`
 
 	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (r *SiteAdminsResponse) GetResponseCode() ResponseCode {
-	return r.Meta.ResponseCode
-}
-
-func (r *SiteAdminsResponse) GetResponseMessage() string {
-	return r.Meta.ResponseMessage
 }
 
 // SiteAdmins returns a list of administrators and permissions for all sites
