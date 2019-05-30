@@ -13,8 +13,6 @@ type SiteCountryCode struct {
 type SiteCountryCodesResponse struct {
 	Meta CommonMeta        `json:"meta"`
 	Data []SiteCountryCode `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) SiteCountryCodes(siteID string) (*SiteCountryCodesResponse, error) {

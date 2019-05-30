@@ -11,8 +11,6 @@ type ControllerStatusMeta struct {
 	ServerVersion       string       `json:"server_version"`
 	Up                  bool         `json:"up"`
 	UUID                string       `json:"uuid"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (r *ControllerStatusMeta) GetResponseCode() ResponseCode {
@@ -24,9 +22,8 @@ func (r *ControllerStatusMeta) GetResponseMessage() string {
 }
 
 type ControllerStatus struct {
-	Meta ControllerStatusMeta `json:"meta"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
+	Meta ControllerStatusMeta     `json:"meta"`
+	Data []map[string]interface{} `json:"data"`
 }
 
 // ControllerStatus returns some very basic server information
@@ -54,8 +51,6 @@ type SitesResponseData struct {
 type SitesResponse struct {
 	Meta CommonMeta          `json:"meta"`
 	Data []SitesResponseData `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) AvailableSites() (*SitesResponse, error) {
@@ -166,15 +161,11 @@ type SitesVerboseResponseData struct {
 	NumberNewAlarms   int     `json:"num_new_alarms"`
 
 	Health []SitesVerboseHealthData `json:"health"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 type SitesVerboseResponse struct {
 	Meta CommonMeta                 `json:"meta"`
 	Data []SitesVerboseResponseData `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) AvailableSitesVerbose() (*SitesVerboseResponse, error) {
@@ -184,9 +175,8 @@ func (c *Client) AvailableSitesVerbose() (*SitesVerboseResponse, error) {
 }
 
 type SiteAdminsResponse struct {
-	Meta CommonMeta `json:"meta"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
+	Meta CommonMeta               `json:"meta"`
+	Data []map[string]interface{} `json:"data"`
 }
 
 // SiteAdmins returns a list of administrators and permissions for all sites

@@ -43,8 +43,6 @@ type SiteHealthData struct {
 type SiteHealthResponse struct {
 	Meta CommonMeta       `json:"meta"`
 	Data []SiteHealthData `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) SiteHealth(siteID string) (*SiteHealthResponse, error) {

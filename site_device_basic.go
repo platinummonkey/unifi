@@ -18,8 +18,6 @@ type SiteDeviceBasic struct {
 type SiteDeviceBasicResponse struct {
 	Meta CommonMeta        `json:"meta"`
 	Data []SiteDeviceBasic `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) SiteDevicesBasic(siteID string, typeFilter string) (*SiteDeviceBasicResponse, error) {

@@ -43,23 +43,11 @@ type SiteEventsEvent struct {
 	RadioTo     string `json:"radio_to"`
 	ChannelFrom string `json:"channel_from"`
 	ChannelTo   string `json:"channel_to"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (e SiteEventsEvent) MarshalJSON() ([]byte, error) {
-	return MarshalJSON(e)
-}
-
-func (e *SiteEventsEvent) UnmarshalJSON(data []byte) error {
-	return UnmarshalJSON(data, e)
 }
 
 type SiteEventsResponse struct {
 	Meta CommonMeta        `json:"meta"`
 	Data []SiteEventsEvent `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 // type SiteEventsResponse map[string]interface{}

@@ -9,9 +9,8 @@ import (
 )
 
 type LoginResponse struct {
-	Meta CommonMeta `json:"meta"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
+	Meta CommonMeta               `json:"meta"`
+	Data []map[string]interface{} `json:"data"`
 }
 
 // Login will login the user for making queries
@@ -89,10 +88,8 @@ type SelfResponseData struct {
 }
 
 type SelfResponse struct {
-	Data []SelfResponseData `json:"data"` // yes it's an array for some horrible reason.
 	Meta CommonMeta         `json:"meta"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
+	Data []SelfResponseData `json:"data"` // yes it's an array for some horrible reason.
 }
 
 // Self returns the logged in user.

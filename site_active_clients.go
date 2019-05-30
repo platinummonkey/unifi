@@ -60,23 +60,11 @@ type SiteActiveClient struct {
 	Uptime                int64  `json:"uptime"`
 	UserID                string `json:"user_id"`
 	VLAN                  int    `json:"vlan"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
-}
-
-func (c SiteActiveClient) MarshalJSON() ([]byte, error) {
-	return MarshalJSON(c)
-}
-
-func (c *SiteActiveClient) UnmarshalJSON(data []byte) error {
-	return UnmarshalJSON(data, c)
 }
 
 type SiteActiveClientsResponse struct {
 	Meta CommonMeta         `json:"meta"`
 	Data []SiteActiveClient `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) SiteActiveClients(siteID string) (*SiteActiveClientsResponse, error) {

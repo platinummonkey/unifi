@@ -53,15 +53,11 @@ type SiteAlarmsAlarm struct {
 	USGIPASN              string      `json:"usgipASN"`
 	USGIPCountry          interface{} `json:"usgipCountry"`
 	USGIPGeo              GeoCodeData `json:"usgipGeo"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 type SiteAlarmsResponse struct {
 	Meta CommonMeta        `json:"meta"`
 	Data []SiteAlarmsAlarm `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) SiteAlarms(siteID string, historyHours int, offset int, limit int, order EventSortOrder) (*SiteAlarmsResponse, error) {

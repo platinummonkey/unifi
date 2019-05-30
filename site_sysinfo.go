@@ -46,15 +46,11 @@ type SiteSysInfo struct {
 	UpdateAvailable                          bool        `json:"update_available"`
 	UpdateDownloaded                         bool        `json:"update_downloaded"`
 	Version                                  string      `json:"version"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 type SiteSysInfoResponse struct {
 	Meta CommonMeta    `json:"meta"`
 	Data []SiteSysInfo `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) SiteSysInfo(siteID string) (*SiteSysInfoResponse, error) {

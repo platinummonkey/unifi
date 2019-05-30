@@ -26,8 +26,6 @@ type SiteCurrentChannels struct {
 type SiteCurrentChannelsResponse struct {
 	Meta CommonMeta            `json:"meta"`
 	Data []SiteCurrentChannels `json:"data"`
-
-	XXXUnknown map[string]interface{} `json:"-"`
 }
 
 func (c *Client) SiteCurrentChannels(siteID string) (*SiteCurrentChannelsResponse, error) {
