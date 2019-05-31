@@ -21,9 +21,9 @@ type SiteActiveRoutesResponse struct {
 	Data []SiteActiveRoutes `json:"data"`
 }
 
-func (c *Client) SiteActiveRoutes(siteID string) (*SiteActiveRoutesResponse, error) {
+func (c *Client) SiteActiveRoutes(site string) (*SiteActiveRoutesResponse, error) {
 	var resp SiteActiveRoutesResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/routing", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/routing", nil, &resp)
 	return &resp, err
 }
 
@@ -34,8 +34,8 @@ type SiteUserDefinedRoutesResponse struct {
 	Data []SiteUserDefinedRoute `json:"data"`
 }
 
-func (c *Client) SiteUserDefinedRoutes(siteID string) (*SiteUserDefinedRoutesResponse, error) {
+func (c *Client) SiteUserDefinedRoutes(site string) (*SiteUserDefinedRoutesResponse, error) {
 	var resp SiteUserDefinedRoutesResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "rest/routing", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "rest/routing", nil, &resp)
 	return &resp, err
 }

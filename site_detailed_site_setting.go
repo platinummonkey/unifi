@@ -12,8 +12,8 @@ type SiteDetailedSettingsResponse struct {
 	Data []SiteDetailedSettings `json:"data"`
 }
 
-func (c *Client) SiteDetailedSettings(siteID string) (*SiteDetailedSettingsResponse, error) {
+func (c *Client) SiteDetailedSettings(site string) (*SiteDetailedSettingsResponse, error) {
 	var resp SiteDetailedSettingsResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "rest/setting", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "rest/setting", nil, &resp)
 	return &resp, err
 }

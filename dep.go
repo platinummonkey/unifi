@@ -73,3 +73,14 @@ type GeoCodeData struct {
 	PostalCode    string  `json:"postal_code"` // varies based on country
 	Region        string  `json:"region"`
 }
+
+type CallableCommand interface {
+	Manager() string                         // must return the manager
+	Command() string                         // must return the command
+	Payload() (map[string]interface{}, bool) // must return any additional payload, false if nothing to include
+}
+
+type GenericResponse struct {
+	Meta CommonMeta             `json:"meta"`
+	Data map[string]interface{} `json:"data"`
+}

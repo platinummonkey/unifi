@@ -20,7 +20,7 @@ type SiteDeviceBasicResponse struct {
 	Data []SiteDeviceBasic `json:"data"`
 }
 
-func (c *Client) SiteDevicesBasic(siteID string, typeFilter string) (*SiteDeviceBasicResponse, error) {
+func (c *Client) SiteDevicesBasic(site string, typeFilter string) (*SiteDeviceBasicResponse, error) {
 	var resp SiteDeviceBasicResponse
 	var sendBody io.Reader
 	if typeFilter != "" {
@@ -30,6 +30,6 @@ func (c *Client) SiteDevicesBasic(siteID string, typeFilter string) (*SiteDevice
 		data, _ := json.Marshal(payload)
 		sendBody = bytes.NewReader(data)
 	}
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/device-basic", sendBody, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/device-basic", sendBody, &resp)
 	return &resp, err
 }

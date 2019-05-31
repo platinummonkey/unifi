@@ -11,9 +11,9 @@ type SiteFirewallRuleResponse struct {
 	Data []SiteFirewallRule `json:"data"`
 }
 
-func (c *Client) SiteFirewallRules(siteID string) (*SiteFirewallRuleResponse, error) {
+func (c *Client) SiteFirewallRules(site string) (*SiteFirewallRuleResponse, error) {
 	var resp SiteFirewallRuleResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "rest/firewallrule", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "rest/firewallrule", nil, &resp)
 	return &resp, err
 }
 
@@ -24,8 +24,8 @@ type SiteFirewallGroupResponse struct {
 	Data []SiteFirewallGroup `json:"data"`
 }
 
-func (c *Client) SiteFirewallGroups(siteID string) (*SiteFirewallGroupResponse, error) {
+func (c *Client) SiteFirewallGroups(site string) (*SiteFirewallGroupResponse, error) {
 	var resp SiteFirewallGroupResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "rest/firewallgroup", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "rest/firewallgroup", nil, &resp)
 	return &resp, err
 }

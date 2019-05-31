@@ -53,8 +53,8 @@ type SiteSysInfoResponse struct {
 	Data []SiteSysInfo `json:"data"`
 }
 
-func (c *Client) SiteSysInfo(siteID string) (*SiteSysInfoResponse, error) {
+func (c *Client) SiteSysInfo(site string) (*SiteSysInfoResponse, error) {
 	var resp SiteSysInfoResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/sysinfo", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/sysinfo", nil, &resp)
 	return &resp, err
 }

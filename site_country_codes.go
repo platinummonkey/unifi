@@ -15,8 +15,8 @@ type SiteCountryCodesResponse struct {
 	Data []SiteCountryCode `json:"data"`
 }
 
-func (c *Client) SiteCountryCodes(siteID string) (*SiteCountryCodesResponse, error) {
+func (c *Client) SiteCountryCodes(site string) (*SiteCountryCodesResponse, error) {
 	var resp SiteCountryCodesResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/ccode", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/ccode", nil, &resp)
 	return &resp, err
 }

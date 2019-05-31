@@ -60,7 +60,7 @@ type SiteAlarmsResponse struct {
 	Data []SiteAlarmsAlarm `json:"data"`
 }
 
-func (c *Client) SiteAlarms(siteID string, historyHours int, offset int, limit int, order EventSortOrder) (*SiteAlarmsResponse, error) {
+func (c *Client) SiteAlarms(site string, historyHours int, offset int, limit int, order EventSortOrder) (*SiteAlarmsResponse, error) {
 	if historyHours <= 0 {
 		historyHours = 720
 	}
@@ -85,6 +85,6 @@ func (c *Client) SiteAlarms(siteID string, historyHours int, offset int, limit i
 	data, _ := json.Marshal(&payload)
 
 	var resp SiteAlarmsResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/alarm", bytes.NewReader(data), &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/alarm", bytes.NewReader(data), &resp)
 	return &resp, err
 }

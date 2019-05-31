@@ -28,8 +28,8 @@ type SiteCurrentChannelsResponse struct {
 	Data []SiteCurrentChannels `json:"data"`
 }
 
-func (c *Client) SiteCurrentChannels(siteID string) (*SiteCurrentChannelsResponse, error) {
+func (c *Client) SiteCurrentChannels(site string) (*SiteCurrentChannelsResponse, error) {
 	var resp SiteCurrentChannelsResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/current-channel", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/current-channel", nil, &resp)
 	return &resp, err
 }

@@ -38,7 +38,7 @@ type SiteRougeAccessPointResponse struct {
 	Data []SiteRougeAccessPoint `json:"data"`
 }
 
-func (c *Client) SiteRougeAccessPoints(siteID string, seenWithinHours int) (*SiteRougeAccessPointResponse, error) {
+func (c *Client) SiteRougeAccessPoints(site string, seenWithinHours int) (*SiteRougeAccessPointResponse, error) {
 	if seenWithinHours < 0 {
 		seenWithinHours = 24
 	}
@@ -49,6 +49,6 @@ func (c *Client) SiteRougeAccessPoints(siteID string, seenWithinHours int) (*Sit
 	data, _ := json.Marshal(payload)
 
 	var resp SiteRougeAccessPointResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/rogueap", bytes.NewReader(data), &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/rogueap", bytes.NewReader(data), &resp)
 	return &resp, err
 }

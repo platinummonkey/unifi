@@ -45,8 +45,8 @@ type SiteHealthResponse struct {
 	Data []SiteHealthData `json:"data"`
 }
 
-func (c *Client) SiteHealth(siteID string) (*SiteHealthResponse, error) {
+func (c *Client) SiteHealth(site string) (*SiteHealthResponse, error) {
 	var resp SiteHealthResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/health", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/health", nil, &resp)
 	return &resp, err
 }

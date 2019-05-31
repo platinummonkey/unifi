@@ -52,7 +52,7 @@ type SiteEventsResponse struct {
 
 // type SiteEventsResponse map[string]interface{}
 
-func (c *Client) SiteEvents(siteID string, historyHours int, offset int, limit int, order EventSortOrder) (*SiteEventsResponse, error) {
+func (c *Client) SiteEvents(site string, historyHours int, offset int, limit int, order EventSortOrder) (*SiteEventsResponse, error) {
 	if historyHours <= 0 {
 		historyHours = 720
 	}
@@ -77,6 +77,6 @@ func (c *Client) SiteEvents(siteID string, historyHours int, offset int, limit i
 	data, _ := json.Marshal(&payload)
 
 	var resp SiteEventsResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/event", bytes.NewReader(data), &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/event", bytes.NewReader(data), &resp)
 	return &resp, err
 }

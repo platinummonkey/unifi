@@ -166,6 +166,6 @@ func (c *Client) doRequest(method string, extPath string, sendBody io.Reader, re
 	return nil
 }
 
-func (c *Client) doSiteRequest(method string, siteID string, extPath string, sendBody io.Reader, ret interface{}, queryParamsPairs ...string) error {
-	return c.doRequest(method, fmt.Sprintf("/api/s/%s/%s", siteID, extPath), sendBody, ret, queryParamsPairs...)
+func (c *Client) doSiteRequest(method string, site string, extPath string, sendBody io.Reader, ret interface{}, queryParamsPairs ...string) error {
+	return c.doRequest(method, fmt.Sprintf("/api/s/%s/%s", site, extPath), sendBody, ret, queryParamsPairs...)
 }

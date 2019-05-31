@@ -74,7 +74,7 @@ type SiteDeviceDetailedResponse struct {
 	Data []SiteDeviceDetailedData `json:"data"`
 }
 
-func (c *Client) SiteDevicesDetailed(siteID string, filterMACs ...string) (*SiteDeviceDetailedResponse, error) {
+func (c *Client) SiteDevicesDetailed(site string, filterMACs ...string) (*SiteDeviceDetailedResponse, error) {
 	var resp SiteDeviceDetailedResponse
 	var sendBody io.Reader
 	method := http.MethodGet
@@ -87,6 +87,6 @@ func (c *Client) SiteDevicesDetailed(siteID string, filterMACs ...string) (*Site
 		data, _ := json.Marshal(payload)
 		sendBody = bytes.NewReader(data)
 	}
-	err := c.doSiteRequest(method, siteID, "stat/device", sendBody, &resp)
+	err := c.doSiteRequest(method, site, "stat/device", sendBody, &resp)
 	return &resp, err
 }

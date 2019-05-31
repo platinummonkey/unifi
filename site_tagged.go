@@ -11,8 +11,8 @@ type SiteTaggedMACResponse struct {
 	Data []SiteTaggedMAC `json:"data"`
 }
 
-func (c *Client) SiteTaggedMACs(siteID string) (*SiteTaggedMACResponse, error) {
+func (c *Client) SiteTaggedMACs(site string) (*SiteTaggedMACResponse, error) {
 	var resp SiteTaggedMACResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "rest/tag", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "rest/tag", nil, &resp)
 	return &resp, err
 }

@@ -67,8 +67,8 @@ type SiteActiveClientsResponse struct {
 	Data []SiteActiveClient `json:"data"`
 }
 
-func (c *Client) SiteActiveClients(siteID string) (*SiteActiveClientsResponse, error) {
+func (c *Client) SiteActiveClients(site string) (*SiteActiveClientsResponse, error) {
 	var resp SiteActiveClientsResponse
-	err := c.doSiteRequest(http.MethodGet, siteID, "stat/sta", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, "stat/sta", nil, &resp)
 	return &resp, err
 }
