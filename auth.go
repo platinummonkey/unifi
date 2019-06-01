@@ -45,13 +45,13 @@ func (c *Client) Login(username string, password string, remember bool) error {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return InvalidResponseBody
+		return ErrInvalidResponseBody
 	}
 
 	var loginResponse LoginResponse
 	err = json.Unmarshal(body, &loginResponse)
 	if err != nil {
-		return JSONDecodeError
+		return ErrJSONDecode
 	}
 
 	if !loginResponse.Meta.ResponseCode.Equal(ResponseCodeOK) {

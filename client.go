@@ -184,12 +184,12 @@ func (c *Client) doRequest(method string, extPath string, sendBody io.Reader, re
 	if !rv.IsNil() {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return errors.Wrap(err, InvalidResponseBody.Error())
+			return errors.Wrap(err, ErrInvalidResponseBody.Error())
 		}
 
 		err = json.Unmarshal(body, ret)
 		if err != nil {
-			return errors.Wrap(err, JSONDecodeError.Error())
+			return errors.Wrap(err, ErrJSONDecode.Error())
 		}
 		if rv.Kind() == reflect.Struct {
 			metaField := rv.FieldByName("Meta")

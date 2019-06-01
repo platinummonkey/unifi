@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// ControllerStatusMeta is the controller status metadata type
 type ControllerStatusMeta struct {
 	ResponseCode        ResponseCode `json:"rc"`
 	ResponseCodeMessage string       `json:"msg"`
@@ -13,14 +14,17 @@ type ControllerStatusMeta struct {
 	UUID                string       `json:"uuid"`
 }
 
+// GetResponseCode returns the response code
 func (r *ControllerStatusMeta) GetResponseCode() ResponseCode {
 	return r.ResponseCode
 }
 
+// GetResponseMessage returns the response message
 func (r *ControllerStatusMeta) GetResponseMessage() string {
 	return r.ResponseCodeMessage
 }
 
+// ControllerStatus is the controller status response
 type ControllerStatus struct {
 	Meta ControllerStatusMeta     `json:"meta"`
 	Data []map[string]interface{} `json:"data"`
@@ -34,6 +38,7 @@ func (c *Client) ControllerStatus() (*ControllerStatus, error) {
 	return &status, err
 }
 
+// SitesResponseData represents the self/sites response data
 type SitesResponseData struct {
 	ID                string  `json:"_id"`
 	Name              string  `json:"name"`
@@ -48,23 +53,27 @@ type SitesResponseData struct {
 	XXXUnknown map[string]interface{} `json:"-"`
 }
 
+// SitesResponse represents the self/sites response
 type SitesResponse struct {
 	Meta CommonMeta          `json:"meta"`
 	Data []SitesResponseData `json:"data"`
 }
 
+// AvailableSites returns the available sites for the controller.
 func (c *Client) AvailableSites() (*SitesResponse, error) {
 	var ret SitesResponse
 	err := c.doRequest(http.MethodGet, "/api/self/sites", nil, &ret)
 	return &ret, err
 }
 
+// SitesVerboseGatewaySystemStats contains gateway system stats
 type SitesVerboseGatewaySystemStats struct {
 	CPUUsage    interface{} `json:"cpu"`    // these come back as strings >.<
 	MemoryUsage interface{} `json:"mem"`    // these come back as strings >.<
 	Uptime      interface{} `json:"uptime"` // these come back as strings >.<
 }
 
+// GetCPUUsage returns the CPU usage
 func (s SitesVerboseGatewaySystemStats) GetCPUUsage() float64 {
 	switch s.CPUUsage.(type) {
 	case string:
@@ -79,6 +88,7 @@ func (s SitesVerboseGatewaySystemStats) GetCPUUsage() float64 {
 	return 0
 }
 
+// GetMemoryUsage returns the memory usage
 func (s SitesVerboseGatewaySystemStats) GetMemoryUsage() float64 {
 	switch s.MemoryUsage.(type) {
 	case string:
@@ -93,6 +103,7 @@ func (s SitesVerboseGatewaySystemStats) GetMemoryUsage() float64 {
 	return 0
 }
 
+// GetUptime returns the uptime
 func (s SitesVerboseGatewaySystemStats) GetUptime() float64 {
 	switch s.Uptime.(type) {
 	case string:
@@ -107,6 +118,7 @@ func (s SitesVerboseGatewaySystemStats) GetUptime() float64 {
 	return 0
 }
 
+// SitesVerboseHealthData is the normalized verbose health data
 type SitesVerboseHealthData struct {
 	// type 1
 	NumberAdopted      int    `json:"num_adopted"`
@@ -148,6 +160,7 @@ type SitesVerboseHealthData struct {
 	NumberSW int    `json:"num_sw"`
 }
 
+// SitesVerboseResponseData contains normalized health data
 type SitesVerboseResponseData struct {
 	ID                string  `json:"_id"`
 	Name              string  `json:"name"`
@@ -163,17 +176,20 @@ type SitesVerboseResponseData struct {
 	Health []SitesVerboseHealthData `json:"health"`
 }
 
+// SitesVerboseResponse is the verbose response for stat/sites
 type SitesVerboseResponse struct {
 	Meta CommonMeta                 `json:"meta"`
 	Data []SitesVerboseResponseData `json:"data"`
 }
 
+// AvailableSitesVerbose returns the available sites with verbose health data
 func (c *Client) AvailableSitesVerbose() (*SitesVerboseResponse, error) {
 	var ret SitesVerboseResponse
 	err := c.doRequest(http.MethodGet, "/api/stat/sites", nil, &ret)
 	return &ret, err
 }
 
+// SiteAdminsResponse returns the stat/admin response data
 type SiteAdminsResponse struct {
 	Meta CommonMeta               `json:"meta"`
 	Data []map[string]interface{} `json:"data"`

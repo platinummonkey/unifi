@@ -5,45 +5,55 @@ import (
 	"strings"
 )
 
+// Common headers
 const (
 	ContentTypeHeader = "application/json"
 	Version           = "0.0.1"
 	UserAgentHeader   = "unifi/" + Version
 )
 
-// common errors
+// Common errors
 const (
 	APINoPermissionError = "api.err.NoPermission"
 	APIInvalidError      = "api.err.Invalid"
 )
 
-// InvalidResponseBody indicates and error with the body of the response
-var InvalidResponseBody = fmt.Errorf("invalid response body")
+// ErrInvalidResponseBody indicates and error with the body of the response
+var ErrInvalidResponseBody = fmt.Errorf("invalid response body")
 
-// JSONDecodeError indicates an unexpected unmarshal problem from the API, check this is a valid endpoint.
-var JSONDecodeError = fmt.Errorf("unable to unmarshal json response")
+// ErrJSONDecode indicates an unexpected unmarshal problem from the API, check this is a valid endpoint.
+var ErrJSONDecode = fmt.Errorf("unable to unmarshal json response")
 
+// ResponseCode is the api response code, typically just `ok` or `err`
 type ResponseCode string
 
+// MarshalJSON implements json.Marshaler
 func (r ResponseCode) MarshalJSON() ([]byte, error) {
 	return []byte(string(r)), nil
 }
 
+// UnmarshalJSON implements json.Unmarshaler
 func (r *ResponseCode) UnmarshalJSON(data []byte) error {
 	// HACK: we must trim `"` because sometimes the controller passes back `"rc": "\"<status>\""`
 	*r = ResponseCode(strings.TrimRight(strings.TrimLeft(string(data), "\""), "\""))
 	return nil
 }
 
+// Equal compares response codes
 func (r *ResponseCode) Equal(o ResponseCode) bool {
-	return strings.EqualFold(string(*r), string(o))
+	return strings.EqualFold(
+		strings.TrimSpace(strings.Trim(strings.ToLower(string(*r)), "\"")),
+		strings.TrimSpace(strings.Trim(strings.ToLower(string(o)), "\"")),
+	)
 }
 
+// Known response codes from the api
 const (
 	ResponseCodeOK    ResponseCode = "ok"
 	ResponseCodeError ResponseCode = "error"
 )
 
+// CommonMeta is the most common meta response from the api
 type CommonMeta struct {
 	ResponseCode        ResponseCode `json:"rc"`
 	ResponseCodeMessage string       `json:"msg"`
@@ -52,14 +62,17 @@ type CommonMeta struct {
 	XXXUnknown map[string]interface{} `json:"-"`
 }
 
+// GetResponseCode returns the response code
 func (m *CommonMeta) GetResponseCode() ResponseCode {
 	return m.ResponseCode
 }
 
+// GetResponseMessage return the response message
 func (m *CommonMeta) GetResponseMessage() string {
 	return m.ResponseCodeMessage
 }
 
+// GeoCodeData contains the geo-code data that is common
 type GeoCodeData struct {
 	AreaCode      int     `json:"area_code"`
 	City          string  `json:"city"`
@@ -74,12 +87,8 @@ type GeoCodeData struct {
 	Region        string  `json:"region"`
 }
 
-type CallableCommand interface {
-	Manager() string                         // must return the manager
-	Command() string                         // must return the command
-	Payload() (map[string]interface{}, bool) // must return any additional payload, false if nothing to include
-}
-
+// GenericResponse is the most generic response
+// this is used in the short term to provide quick functionality while they are more defined in experimentation/docs.
 type GenericResponse struct {
 	Meta CommonMeta             `json:"meta"`
 	Data map[string]interface{} `json:"data"`
