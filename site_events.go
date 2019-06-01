@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type EventSortOrder string
@@ -50,8 +51,12 @@ type SiteEventsResponse struct {
 	Data []SiteEventsEvent `json:"data"`
 }
 
-// type SiteEventsResponse map[string]interface{}
-
+// SiteEvents will fetch events
+// site - site to get IPS/IDS events
+// historyHours - number of hours to search in the past
+// offset - offset current search if previous request exceeded limit
+// limit - limit to number of events to return
+// order - how to order the ips/ids events.
 func (c *Client) SiteEvents(site string, historyHours int, offset int, limit int, order EventSortOrder) (*SiteEventsResponse, error) {
 	if historyHours <= 0 {
 		historyHours = 720
@@ -78,5 +83,47 @@ func (c *Client) SiteEvents(site string, historyHours int, offset int, limit int
 
 	var resp SiteEventsResponse
 	err := c.doSiteRequest(http.MethodGet, site, "stat/event", bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
+// SiteIPSEvents will fetch IPS/IDS events
+// site - site to get IPS/IDS events
+// startTime - start time to search, set to 0 and endTime to 0 for default last 24h behavior
+// endTime - end time to search, set to 0 and startTime to 0 for default last 24h behavior
+// offset - offset current search if previous request exceeded limit
+// limit - limit to number of events to return
+// order - how to order the ips/ids events.
+func (c *Client) SiteIPSEvents(site string, startTime time.Time, endTime time.Time, offset int, limit int, order EventSortOrder) (*SiteEventsResponse, error) {
+	if startTime.IsZero() && endTime.IsZero() {
+		endTime = time.Now().UTC()
+		startTime = endTime.Add(-24 * time.Hour)
+	}
+	if !startTime.Before(endTime) {
+		return nil, fmt.Errorf("end time must come after start time")
+	}
+
+	if limit <= 0 {
+		limit = 100
+	} else if limit > 3000 {
+		// there is a default max
+		limit = 3000
+	}
+
+	if !order.IsValid() {
+		return nil, InvalidSortOrderError
+	}
+
+	payload := map[string]interface{}{
+		"_sort":  string(order),
+		"type":   nil,
+		"start":  startTime.UTC().Unix() * 1000,
+		"end":    endTime.UTC().Unix() * 1000,
+		"_start": offset,
+		"_limit": limit,
+	}
+	data, _ := json.Marshal(&payload)
+
+	var resp SiteEventsResponse
+	err := c.doSiteRequest(http.MethodGet, site, "/stat/ips/event", bytes.NewReader(data), &resp)
 	return &resp, err
 }

@@ -165,3 +165,69 @@ func (c *Client) SpectrumScanDevice(site string, mac string) (*GenericResponse, 
 	err := c.doSiteRequest(http.MethodPost, site, "cmd/devmgr", bytes.NewReader(data), &resp)
 	return &resp, err
 }
+
+// CreateNewUserClientDevice will create a new User/Client device
+// mac - client MAC address
+// userGroupID - ID value of the UserGroup the new user/client device should belong with.
+//               use ListUserGroups to obtain this.
+// name - optional name to provide the user/client device
+// note - optional note to provide the user/client device
+func (c *Client) CreateNewUserClientDevice(site string, mac string, userGroupID string, name string, note string) (*GenericResponse, error) {
+	userPayload := map[string]interface{}{
+		"mac":          mac,
+		"usergroup_id": userGroupID,
+	}
+	if name != "" {
+		userPayload["name"] = name
+	}
+	if note != "" {
+		userPayload["note"] = note
+		userPayload["noted"] = true
+	}
+	payload := map[string]interface{}{
+		"objects": []map[string]interface{}{
+			{
+				"data": userPayload,
+			},
+		},
+	}
+
+	data, _ := json.Marshal(payload)
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodPost, site, "group/user", bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
+// SetUserClientDeviceNote will update a note on a user/client device.
+// userID - client user ID obtained from SiteDevicesDetailed
+// note - optional note to provide the user/client device
+//        when note is empty, the existing note for the client-device will be removed
+func (c *Client) SetUserClientDeviceNote(site string, userID string, note string) (*GenericResponse, error) {
+	payload := map[string]interface{}{
+		"noted": note != "",
+		"note":  note,
+	}
+
+	data, _ := json.Marshal(payload)
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodPost, site, "upd/user", bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
+// SetUserClientDeviceName will update a name on a user/client device.
+// userID - client user ID obtained from SiteDevicesDetailed
+// name - optional name to provide the user/client device
+//        when note is empty, the existing note for the client-device will be removed
+func (c *Client) SetUserClientDeviceName(site string, userID string, name string) (*GenericResponse, error) {
+	payload := map[string]interface{}{
+		"name": name,
+	}
+
+	data, _ := json.Marshal(payload)
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodPost, site, "upd/user", bytes.NewReader(data), &resp)
+	return &resp, err
+}

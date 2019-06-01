@@ -3,6 +3,7 @@ package unifi
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -135,10 +136,13 @@ func (c *Client) KickSTA(site string, mac string) (*GenericResponse, error) {
 // ForgetSTA will forget a STA from the current site.
 // site - site this device currently registered to
 // mac - the device mac
-func (c *Client) ForgetSTA(site string, mac string) (*GenericResponse, error) {
+func (c *Client) ForgetSTA(site string, macs ...string) (*GenericResponse, error) {
+	if len(macs) == 0 {
+		return nil, fmt.Errorf("must specify at least one mac")
+	}
 	payload := map[string]interface{}{
 		"cmd": "forget-sta",
-		"mac": mac,
+		"mac": macs,
 	}
 	data, _ := json.Marshal(payload)
 
