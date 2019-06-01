@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// LoginResponse is the login response
 type LoginResponse struct {
 	Meta CommonMeta               `json:"meta"`
 	Data []map[string]interface{} `json:"data"`
@@ -37,7 +38,7 @@ func (c *Client) Login(username string, password string, remember bool) error {
 	}
 	c.SetHeaders(req)
 
-	resp, err := c.HttpClient.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -70,6 +71,7 @@ func (c *Client) Logout() error {
 	return c.doRequest(http.MethodGet, "/api/logout", nil, &LoginResponse{})
 }
 
+// SelfResponseData is the self response data structure
 type SelfResponseData struct {
 	AdminID                   string                 `json:"admin_id"`
 	DeviceID                  string                 `json:"device_id"`
@@ -87,6 +89,7 @@ type SelfResponseData struct {
 	UISettings                map[string]interface{} `json:"ui_settings"`
 }
 
+// SelfResponse is the /api/self response
 type SelfResponse struct {
 	Meta CommonMeta         `json:"meta"`
 	Data []SelfResponseData `json:"data"` // yes it's an array for some horrible reason.

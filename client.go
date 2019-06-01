@@ -23,8 +23,7 @@ type Client struct {
 	baseURL    *url.URL
 	certConfig *CertificationConfig
 
-	// The HTTP Client that is used to make requests
-	HttpClient   *http.Client
+	HTTPClient   *http.Client
 	RetryTimeout time.Duration
 
 	authCookies        []*http.Cookie
@@ -51,7 +50,7 @@ func NewClient(baseURL string, certConfig *CertificationConfig, timeout time.Dur
 	httpClient := http.DefaultClient
 	if certConfig != nil {
 		defaultTransport := http.DefaultTransport.(*http.Transport)
-		var tlsConfig *tls.Config = nil
+		var tlsConfig *tls.Config
 		if certConfig.DisableCertCheck {
 			tlsConfig = &tls.Config{
 				InsecureSkipVerify: true,
@@ -100,7 +99,7 @@ func NewClient(baseURL string, certConfig *CertificationConfig, timeout time.Dur
 		baseURLStr:   baseURL,
 		baseURL:      u,
 		certConfig:   certConfig,
-		HttpClient:   httpClient,
+		HTTPClient:   httpClient,
 		RetryTimeout: timeout,
 	}, nil
 }
@@ -121,6 +120,7 @@ func (c *Client) GetBaseURL() string {
 	return c.baseURLStr
 }
 
+// SetHeaders will set the client headers for auth along with additional pre-defined API headers.
 func (c *Client) SetHeaders(r *http.Request) {
 	r.Header.Set("Content-Type", ContentTypeHeader)
 	r.Header.Set("Accept", ContentTypeHeader)
@@ -134,6 +134,7 @@ func (c *Client) SetHeaders(r *http.Request) {
 	}
 }
 
+// WithPathAndQueryParams will return a normalized url with the baseURL included.
 func (c *Client) WithPathAndQueryParams(extPath string, queryParamsPairs ...string) *url.URL {
 	newPath := path.Join(c.baseURL.Path, extPath)
 	u := &url.URL{
@@ -151,10 +152,12 @@ func (c *Client) WithPathAndQueryParams(extPath string, queryParamsPairs ...stri
 	return u
 }
 
+// ResponseCodeTrait defines the interface that returns the response code
 type ResponseCodeTrait interface {
 	GetResponseCode() ResponseCode
 }
 
+// ResponseMessageTrait defines an interface that returns the response message.
 type ResponseMessageTrait interface {
 	GetResponseMessage() string
 }
@@ -173,7 +176,7 @@ func (c *Client) doRequest(method string, extPath string, sendBody io.Reader, re
 	}
 	c.SetHeaders(req)
 
-	resp, err := c.HttpClient.Do(req)
+	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return err
 	}
