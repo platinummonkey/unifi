@@ -1,7 +1,11 @@
 package unifi
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 )
 
 type SiteActiveClient struct {
@@ -67,8 +71,58 @@ type SiteActiveClientsResponse struct {
 	Data []SiteActiveClient `json:"data"`
 }
 
-func (c *Client) SiteActiveClients(site string) (*SiteActiveClientsResponse, error) {
+// SiteActiveClients will list active clients
+// site - the site to query
+// filterMac - filter to a specific mac, if zero-value, then no filter is applied
+func (c *Client) SiteActiveClients(site string, filterMac string) (*SiteActiveClientsResponse, error) {
+	extPath := "stat/sta"
+	if filterMac != "" {
+		extPath = extPath + "/" + strings.ToLower(filterMac)
+	}
+
 	var resp SiteActiveClientsResponse
-	err := c.doSiteRequest(http.MethodGet, site, "stat/sta", nil, &resp)
+	err := c.doSiteRequest(http.MethodGet, site, extPath, nil, &resp)
+	return &resp, err
+}
+
+// ClientDetails gets the details for a single client
+// site - the site to query
+// mac - the client mac to query
+func (c *Client) ClientDetails(site string, mac string) (*GenericResponse, error) {
+	if mac == "" {
+		return nil, fmt.Errorf("must specify a client MAC")
+	}
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodGet, site, fmt.Sprintf("stat/user/%s", strings.ToLower(mac)), nil, &resp)
+	return &resp, err
+}
+
+// UpdateClientFixedIP will update a clients fixedIP
+// site - the site to modify
+// clientID - the ID of the user/client device to be modified
+// useFixedIP - true to set a fixedIP, false to unset
+// networkID - if useFixedIP set this to the specified value
+// fixedIP - if userFixedIP set this to the fixed IP specified
+func (c *Client) UpdateClientFixedIP(site string, clientID string, useFixedIP bool, networkID *string, fixedIP *string) (*GenericResponse, error) {
+	payload := map[string]interface{}{
+		"_id":         strings.TrimSpace(strings.ToLower(clientID)),
+		"use_fixedip": useFixedIP,
+	}
+	if useFixedIP {
+		if networkID != nil {
+			payload["network_id"] = *networkID
+		}
+		if fixedIP != nil {
+			payload["fixed_ip"] = *fixedIP
+		}
+	}
+
+	data, _ := json.Marshal(payload)
+
+	extPath := fmt.Sprintf("rest/user/%s", strings.TrimSpace(strings.ToLower(clientID)))
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodPut, site, extPath, bytes.NewReader(data), &resp)
 	return &resp, err
 }

@@ -68,3 +68,22 @@ func (c *Client) UnAuthorizeWiFiGuest(site string, mac string) (*GenericResponse
 	err := c.doSiteRequest(http.MethodPost, site, "cmd/stamgr", bytes.NewReader(data), &resp)
 	return &resp, err
 }
+
+// ListWiFiGuests will list guest devices with valid access
+// site - site to query
+// withinHours - time frame in hours to list guest devices, default value if zero is 24 hours
+func (c *Client) ListWiFiGuests(site string, withinHours int) (*GenericResponse, error) {
+	if withinHours <= 0 {
+		withinHours = 24
+	}
+
+	payload := map[string]interface{}{
+		"within": withinHours,
+	}
+
+	data, _ := json.Marshal(payload)
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodGet, site, "stat/guest", bytes.NewReader(data), &resp)
+	return &resp, err
+}
