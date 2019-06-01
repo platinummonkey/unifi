@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// SiteCurrentChannels defines the current channel
 type SiteCurrentChannels struct {
 	ChannelsNA       []int       `json:"channels_na"`
 	ChannelsNA160    []int       `json:"channels_na_160"`
@@ -23,11 +24,14 @@ type SiteCurrentChannels struct {
 	Name             string      `json:"name"`
 }
 
+// SiteCurrentChannelsResponse defines the stat/current-channel response
 type SiteCurrentChannelsResponse struct {
 	Meta CommonMeta            `json:"meta"`
 	Data []SiteCurrentChannels `json:"data"`
 }
 
+// SiteCurrentChannels lists the current channels
+// site - the site to query
 func (c *Client) SiteCurrentChannels(site string) (*SiteCurrentChannelsResponse, error) {
 	var resp SiteCurrentChannelsResponse
 	err := c.doSiteRequest(http.MethodGet, site, "stat/current-channel", nil, &resp)

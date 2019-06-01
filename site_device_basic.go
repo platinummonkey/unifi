@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// SiteDeviceBasic defines the basic device detail data
 type SiteDeviceBasic struct {
 	Adopted  bool   `json:"adopted"`
 	Disabled bool   `json:"disabled"`
@@ -15,11 +16,15 @@ type SiteDeviceBasic struct {
 	Type     string `json:"type"`
 }
 
+// SiteDeviceBasicResponse contains the stat/device-basic response data
 type SiteDeviceBasicResponse struct {
 	Meta CommonMeta        `json:"meta"`
 	Data []SiteDeviceBasic `json:"data"`
 }
 
+// SiteDevicesBasic queries the basic device data
+// site - the site to query
+// typeFilter - the filter to query, if none, then it queries all devices
 func (c *Client) SiteDevicesBasic(site string, typeFilter string) (*SiteDeviceBasicResponse, error) {
 	var resp SiteDeviceBasicResponse
 	var sendBody io.Reader

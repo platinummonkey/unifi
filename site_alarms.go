@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// SiteAlarmsAlarm is an alarm event
 type SiteAlarmsAlarm struct {
 	ID                    string      `json:"_id"`
 	Archived              bool        `json:"archived"`
@@ -56,14 +57,22 @@ type SiteAlarmsAlarm struct {
 	USGIPGeo              GeoCodeData `json:"usgipGeo"`
 }
 
+// SiteAlarmsResponse contains the stat/alarms alarm events response
 type SiteAlarmsResponse struct {
 	Meta CommonMeta        `json:"meta"`
 	Data []SiteAlarmsAlarm `json:"data"`
 }
 
+// SiteAlarms returns the alarm events for the site
+// site - site to query
+// historyHours - number of hours of history to return, defaults to 24 hours
+// offset - offset of current query, default is 0
+// limit - limit the max amount of events returned, defaults to 3000 if zero-value
+// order - defined the sort order of the alarm events
+// archived - query archived (when true) or unarchived (default) alarm events
 func (c *Client) SiteAlarms(site string, historyHours int, offset int, limit int, order EventSortOrder, archived bool) (*SiteAlarmsResponse, error) {
 	if historyHours <= 0 {
-		historyHours = 720
+		historyHours = 24
 	}
 	if limit <= 0 {
 		limit = 100
@@ -90,29 +99,24 @@ func (c *Client) SiteAlarms(site string, historyHours int, offset int, limit int
 	return &resp, err
 }
 
-type SiteAlarmsCountResponse map[string]interface{}
+// SiteAlarmsCountResponse returns the stat/alarm/cnt/ response data
+type SiteAlarmsCountResponse struct {
+	Meta CommonMeta               `json:"meta"`
+	Data []map[string]interface{} `json:"data"`
+}
 
-func (c *Client) SiteAlarmsCount(site string, historyHours int, offset int, limit int, order EventSortOrder, archived bool) (*SiteAlarmsCountResponse, error) {
+// SiteAlarmsCount returns the count of site alarms
+// site - site to query
+// historyHours - number of hours of history to return, defaults to 24 hours
+// archived - query archived (when true) or unarchived (default) alarm events
+func (c *Client) SiteAlarmsCount(site string, historyHours int, archived bool) (*SiteAlarmsCountResponse, error) {
 	if historyHours <= 0 {
 		historyHours = 720
 	}
-	if limit <= 0 {
-		limit = 100
-	} else if limit > 3000 {
-		// there is a default max
-		limit = 3000
-	}
-
-	if !order.IsValid() {
-		return nil, InvalidSortOrderError
-	}
 
 	payload := map[string]interface{}{
-		"_sort":  string(order),
 		"within": historyHours,
 		"type":   nil,
-		"_start": offset,
-		"_limit": limit,
 	}
 	data, _ := json.Marshal(&payload)
 

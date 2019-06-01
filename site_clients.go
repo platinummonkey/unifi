@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// SiteActiveClient defines an active client device
 type SiteActiveClient struct {
 	ID            string `json:"_id"`
 	IsGuestByUAP  bool   `json:"_is_guest_by_uap"`
@@ -66,6 +67,7 @@ type SiteActiveClient struct {
 	VLAN                  int    `json:"vlan"`
 }
 
+// SiteActiveClientsResponse contains the active clients response
 type SiteActiveClientsResponse struct {
 	Meta CommonMeta         `json:"meta"`
 	Data []SiteActiveClient `json:"data"`
