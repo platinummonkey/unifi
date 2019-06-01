@@ -3,6 +3,7 @@ package unifi
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -60,7 +61,7 @@ type SiteAlarmsResponse struct {
 	Data []SiteAlarmsAlarm `json:"data"`
 }
 
-func (c *Client) SiteAlarms(site string, historyHours int, offset int, limit int, order EventSortOrder) (*SiteAlarmsResponse, error) {
+func (c *Client) SiteAlarms(site string, historyHours int, offset int, limit int, order EventSortOrder, archived bool) (*SiteAlarmsResponse, error) {
 	if historyHours <= 0 {
 		historyHours = 720
 	}
@@ -85,6 +86,37 @@ func (c *Client) SiteAlarms(site string, historyHours int, offset int, limit int
 	data, _ := json.Marshal(&payload)
 
 	var resp SiteAlarmsResponse
-	err := c.doSiteRequest(http.MethodGet, site, "stat/alarm", bytes.NewReader(data), &resp)
+	err := c.doSiteRequest(http.MethodGet, site, fmt.Sprintf("stat/alarm?archived=%t", archived), bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
+type SiteAlarmsCountResponse map[string]interface{}
+
+func (c *Client) SiteAlarmsCount(site string, historyHours int, offset int, limit int, order EventSortOrder, archived bool) (*SiteAlarmsCountResponse, error) {
+	if historyHours <= 0 {
+		historyHours = 720
+	}
+	if limit <= 0 {
+		limit = 100
+	} else if limit > 3000 {
+		// there is a default max
+		limit = 3000
+	}
+
+	if !order.IsValid() {
+		return nil, InvalidSortOrderError
+	}
+
+	payload := map[string]interface{}{
+		"_sort":  string(order),
+		"within": historyHours,
+		"type":   nil,
+		"_start": offset,
+		"_limit": limit,
+	}
+	data, _ := json.Marshal(&payload)
+
+	var resp SiteAlarmsCountResponse
+	err := c.doSiteRequest(http.MethodGet, site, fmt.Sprintf("stat/alarm/cnt/?archived=%t", archived), bytes.NewReader(data), &resp)
 	return &resp, err
 }

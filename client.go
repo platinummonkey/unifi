@@ -2,6 +2,7 @@ package unifi
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,9 +19,9 @@ import (
 // Client is the object that handles talking to the Unifi Controller API. This maintains
 // state information for a particular application connection.
 type Client struct {
-	baseURLStr              string
-	baseURL                 *url.URL
-	disableCertificateCheck bool
+	baseURLStr string
+	baseURL    *url.URL
+	certConfig *CertificationConfig
 
 	// The HTTP Client that is used to make requests
 	HttpClient   *http.Client
@@ -30,10 +31,52 @@ type Client struct {
 	longRunningSession bool
 }
 
-func NewClient(baseURL string, disableCertificateCheck bool) (*Client, error) {
+// CertificationConfig overrides the default HTTP client behavior with certificates.
+// In most home default installations, you're probably using the default self-signed cert that came with the device.
+// This setting allows you to override with your cert validation so that you are not running without certificate checks.
+// The options provided are mutually exclusive to each other.
+// 1. If DisableCertCheck is true, then all certificate checkin is disabled.
+// 2. If PEMCert is provided it will use that certificate.
+// 3. If Certificates are provided, then it will use those provided certificates.
+// 4. The default behavior if nothing is configured or a `nil` CertificationConfig is passed, then the default
+//    go http certificate checks are used.
+type CertificationConfig struct {
+	DisableCertCheck bool                // set to true to disable all certificate checks
+	PEMCert          string              // path to custom cert for self-signed certs
+	Certificates     []*x509.Certificate // custom certificates to add
+}
+
+// NewClient will create a new UniFi http(s) client.
+func NewClient(baseURL string, certConfig *CertificationConfig, timeout time.Duration) (*Client, error) {
 	httpClient := http.DefaultClient
-	if disableCertificateCheck {
+	if certConfig != nil {
 		defaultTransport := http.DefaultTransport.(*http.Transport)
+		var tlsConfig *tls.Config = nil
+		if certConfig.DisableCertCheck {
+			tlsConfig = &tls.Config{
+				InsecureSkipVerify: true,
+			}
+		} else if certConfig.PEMCert != "" {
+			cert, err := ioutil.ReadFile(certConfig.PEMCert)
+			if err != nil {
+				return nil, err
+			}
+			certPool := x509.NewCertPool()
+			certPool.AppendCertsFromPEM(cert)
+			tlsConfig = &tls.Config{
+				RootCAs: certPool,
+			}
+		} else if certConfig.Certificates != nil && len(certConfig.Certificates) > 0 {
+			certPool := x509.NewCertPool()
+			for _, cert := range certConfig.Certificates {
+				if cert != nil {
+					certPool.AddCert(cert)
+				}
+			}
+			tlsConfig = &tls.Config{
+				RootCAs: certPool,
+			}
+		}
 
 		tr := &http.Transport{
 			Proxy:                 defaultTransport.Proxy,
@@ -42,21 +85,23 @@ func NewClient(baseURL string, disableCertificateCheck bool) (*Client, error) {
 			IdleConnTimeout:       defaultTransport.IdleConnTimeout,
 			ExpectContinueTimeout: defaultTransport.ExpectContinueTimeout,
 			TLSHandshakeTimeout:   defaultTransport.TLSHandshakeTimeout,
-			TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
+			TLSClientConfig:       tlsConfig,
 		}
 		httpClient = &http.Client{Transport: tr}
 	}
+	httpClient.Timeout = timeout
+
 	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Client{
-		baseURLStr:              baseURL,
-		baseURL:                 u,
-		disableCertificateCheck: disableCertificateCheck,
-		HttpClient:              httpClient,
-		RetryTimeout:            time.Second * 30,
+		baseURLStr:   baseURL,
+		baseURL:      u,
+		certConfig:   certConfig,
+		HttpClient:   httpClient,
+		RetryTimeout: timeout,
 	}, nil
 }
 
