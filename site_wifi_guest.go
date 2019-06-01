@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// WifiGuestConfig is the guest wifi configuration
 type WifiGuestConfig struct {
 	UploadSpeed    int    // upload speed in Kbps
 	DownloadSpeed  int    // download speed in Kbps
@@ -15,7 +16,7 @@ type WifiGuestConfig struct {
 	AccessPointMac string // Access Point MAC address to which the client is connected, should result in faster authorization
 }
 
-// AuthorizeWiFiGuest will authorize a wifi guest on the network
+// AuthorizeWiFiGuest will authorize a WiFi guest on the network
 // site - site to allow the guest
 // mac - client mac to authorize
 // duration - time for wifi authorization, if <=0 , then it will default to 1hr
@@ -56,6 +57,9 @@ func (c *Client) AuthorizeWiFiGuest(site string, mac string, duration time.Durat
 	return &resp, err
 }
 
+// UnAuthorizeWiFiGuest will unauthorize a WiFi guest
+// site - site to allow the guest
+// mac - client mac to unauthorize
 func (c *Client) UnAuthorizeWiFiGuest(site string, mac string) (*GenericResponse, error) {
 	payload := map[string]interface{}{
 		"cmd": "unauthorize-guest",

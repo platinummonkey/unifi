@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// SiteHealthData contains the site health data
 type SiteHealthData struct {
 	NumberAdopted      int    `json:"num_adopted"`
 	NumberAccessPoints int    `json:"num_ap"`
@@ -40,11 +41,14 @@ type SiteHealthData struct {
 	LANIP string `json:"lan_ip"`
 }
 
+// SiteHealthResponse contains the site health response data from stat/health
 type SiteHealthResponse struct {
 	Meta CommonMeta       `json:"meta"`
 	Data []SiteHealthData `json:"data"`
 }
 
+// SiteHealth queries the site for its health
+// site - the site to query
 func (c *Client) SiteHealth(site string) (*SiteHealthResponse, error) {
 	var resp SiteHealthResponse
 	err := c.doSiteRequest(http.MethodGet, site, "stat/health", nil, &resp)

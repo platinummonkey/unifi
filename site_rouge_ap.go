@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// SiteRougeAccessPoint defines a rouge/neighboring access point data
 type SiteRougeAccessPoint struct {
 	ID              string      `json:"_id"`
 	Age             int         `json:"age"`
@@ -33,6 +34,7 @@ type SiteRougeAccessPoint struct {
 	SiteID          string      `json:"site_id"`
 }
 
+// SiteRougeAccessPointResponse contains rouge access point response data
 type SiteRougeAccessPointResponse struct {
 	Meta CommonMeta             `json:"meta"`
 	Data []SiteRougeAccessPoint `json:"data"`

@@ -82,7 +82,7 @@ func (c *Client) SiteAlarms(site string, historyHours int, offset int, limit int
 	}
 
 	if !order.IsValid() {
-		return nil, InvalidSortOrderError
+		return nil, fmt.Errorf("invalid sort order: %s", order)
 	}
 
 	payload := map[string]interface{}{

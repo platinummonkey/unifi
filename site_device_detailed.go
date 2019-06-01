@@ -7,11 +7,14 @@ import (
 	"net/http"
 )
 
+// SuppressionContent contains the alerts and whitelist suppression content
 type SuppressionContent struct {
 	Alerts    []interface{} `json:"alerts"`
 	WhiteList []interface{} `json:"whitelist"`
 }
 
+// SiteDeviceDetailedData contains the detailed device data
+// note - not all fields are always provided
 type SiteDeviceDetailedData struct {
 	ID                          string             `json:"_id"`
 	Key                         string             `json:"key"`
@@ -69,11 +72,15 @@ type SiteDeviceDetailedData struct {
 	UTMToken                    string             `json:"utm_token"`
 }
 
+// SiteDeviceDetailedResponse contains the detailed device data response
 type SiteDeviceDetailedResponse struct {
 	Meta CommonMeta               `json:"meta"`
 	Data []SiteDeviceDetailedData `json:"data"`
 }
 
+// SiteDevicesDetailed queries for the detailed device data
+// site - the site to query
+// filterMACs - optional list of macs to get specific device data for
 func (c *Client) SiteDevicesDetailed(site string, filterMACs ...string) (*SiteDeviceDetailedResponse, error) {
 	var resp SiteDeviceDetailedResponse
 	var sendBody io.Reader

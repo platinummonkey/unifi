@@ -9,15 +9,19 @@ import (
 	"time"
 )
 
+// SessionType defines the session type
 type SessionType string
 
+// Common session type requests
 const (
 	SessionTypeAll   SessionType = "all"
 	SessionTypeGuest SessionType = "guest"
 	SessionTypeUser  SessionType = "user"
 )
 
-func (t SessionType) Valid() bool {
+// IsValid returns true if it's a valid session type.
+// there are only a few valid types
+func (t SessionType) IsValid() bool {
 	switch t {
 	case SessionTypeAll, SessionTypeGuest, SessionTypeUser:
 		return true
@@ -26,14 +30,18 @@ func (t SessionType) Valid() bool {
 	}
 }
 
+// SiteSessionOrder defines the sort order for the site sessions
 type SiteSessionOrder string
 
+// The supported site session sort orders
 const (
 	SiteSessionSortOrderTimeDescending SiteSessionOrder = "-assoc_time"
 	SiteSessionSortOrderTimeAscending  SiteSessionOrder = "+assoc_time"
 )
 
-func (o SiteSessionOrder) Valid() bool {
+// IsValid returns true if it's a valid sort order.
+// there are only a few valid types
+func (o SiteSessionOrder) IsValid() bool {
 	switch o {
 	case SiteSessionSortOrderTimeAscending, SiteSessionSortOrderTimeDescending:
 		return true
@@ -57,7 +65,7 @@ func (c *Client) ListLoginSessions(site string, sessionType SessionType, startTi
 		return nil, fmt.Errorf("endTime must be after starTime")
 	}
 
-	if !sessionType.Valid() {
+	if !sessionType.IsValid() {
 		return nil, fmt.Errorf("invalid sesisonType: %s", sessionType)
 	}
 
@@ -96,7 +104,7 @@ func (c *Client) ListLatestSessions(site string, mac string, order SiteSessionOr
 		limit = 100
 	}
 
-	if !order.Valid() {
+	if !order.IsValid() {
 		return nil, fmt.Errorf("invalid session order: %s", order)
 	}
 

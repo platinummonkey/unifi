@@ -8,21 +8,27 @@ import (
 	"strings"
 )
 
+// SiteFirewallRule defines a site firewall rule
 type SiteFirewallRule map[string]interface{}
 
+// SiteFirewallRuleResponse contains the firewall rules response
 type SiteFirewallRuleResponse struct {
 	Meta CommonMeta         `json:"meta"`
 	Data []SiteFirewallRule `json:"data"`
 }
 
+// SiteFirewallRules queries the site firewall rules
+// site - the site to query
 func (c *Client) SiteFirewallRules(site string) (*SiteFirewallRuleResponse, error) {
 	var resp SiteFirewallRuleResponse
 	err := c.doSiteRequest(http.MethodGet, site, "rest/firewallrule", nil, &resp)
 	return &resp, err
 }
 
+// SiteFirewallGroup defines the site firewall group
 type SiteFirewallGroup map[string]interface{}
 
+// SiteFirewallGroupResponse contains the firewall groups response
 type SiteFirewallGroupResponse struct {
 	Meta CommonMeta          `json:"meta"`
 	Data []SiteFirewallGroup `json:"data"`
@@ -42,15 +48,19 @@ func (c *Client) SiteFirewallGroups(site string, groupID string) (*SiteFirewallG
 	return &resp, err
 }
 
+// FirewallGroupType defines firewall group types
 type FirewallGroupType string
 
+// The only supported firewall group types
 const (
 	FirewallGroupTypeAddressGroup     FirewallGroupType = "address-group"
 	FirewallGroupTypeIPV6AddressGroup FirewallGroupType = "ipv6-address-group"
 	FirewallGroupTypePortGroup        FirewallGroupType = "port-group"
 )
 
-func (g FirewallGroupType) Valid() bool {
+// IsValid returns true if it's a valid firewall group type.
+// there are only a few valid types
+func (g FirewallGroupType) IsValid() bool {
 	switch g {
 	case FirewallGroupTypeAddressGroup, FirewallGroupTypeIPV6AddressGroup, FirewallGroupTypePortGroup:
 		return true
@@ -59,6 +69,7 @@ func (g FirewallGroupType) Valid() bool {
 	}
 }
 
+// FirewallGroupMembers defines the firewall group members configuration
 type FirewallGroupMembers struct {
 	IPV4Addresses []string
 	IPV6Addresses []string
@@ -71,7 +82,7 @@ type FirewallGroupMembers struct {
 // groupType - the type of firewall group
 // groupMembers - the firewall group member configuration
 func (c *Client) CreateFirewallGroup(site string, name string, groupType FirewallGroupType, groupMembers FirewallGroupMembers) (*GenericResponse, error) {
-	if !groupType.Valid() {
+	if !groupType.IsValid() {
 		return nil, fmt.Errorf("invalid groupType specified: %s", groupType)
 	}
 
@@ -112,7 +123,7 @@ func (c *Client) CreateFirewallGroup(site string, name string, groupType Firewal
 // groupType - the type of firewall group, note you cannot change a group type
 // groupMembers - the firewall group member configuration
 func (c *Client) UpdateFirewallGroup(site string, siteID string, groupID string, name string, groupType FirewallGroupType, groupMembers FirewallGroupMembers) (*GenericResponse, error) {
-	if !groupType.Valid() {
+	if !groupType.IsValid() {
 		return nil, fmt.Errorf("invalid groupType specified: %s", groupType)
 	}
 

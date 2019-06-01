@@ -8,6 +8,9 @@ import (
 )
 
 // AddSite will add a new site to this installation
+// site - the current site context
+// name - the new site name
+// description - the description of the site
 func (c *Client) AddSite(site string, name string, description string) (*GenericResponse, error) {
 	payload := map[string]interface{}{
 		"cmd":  "add-site",
@@ -22,6 +25,8 @@ func (c *Client) AddSite(site string, name string, description string) (*Generic
 }
 
 // UpdateSite will update an existing site with a new description.
+// site - the site to update
+// description - the new site description
 func (c *Client) UpdateSite(site string, description string) (*GenericResponse, error) {
 	payload := map[string]interface{}{
 		"cmd":  "delete-site",
@@ -35,6 +40,7 @@ func (c *Client) UpdateSite(site string, description string) (*GenericResponse, 
 }
 
 // DeleteSite will delete an existing site
+// site - the site to delete
 func (c *Client) DeleteSite(site string) (*GenericResponse, error) {
 	payload := map[string]interface{}{
 		"cmd":  "delete-site",
@@ -48,6 +54,7 @@ func (c *Client) DeleteSite(site string) (*GenericResponse, error) {
 }
 
 // GetSiteAdmins will return the current site admins
+// site - the site to query
 func (c *Client) GetSiteAdmins(site string) (*GenericResponse, error) {
 	data := []byte(`{"cmd": "get-admins"}`)
 
@@ -73,7 +80,7 @@ func (c *Client) MoveDevice(site string, mac string, newSiteID string) (*Generic
 	return &resp, err
 }
 
-// MoveDevice will remove a device from the current site
+// DeleteDevice will remove a device from the current site
 // site - site this device currently registered to
 // mac - the device mac
 func (c *Client) DeleteDevice(site string, mac string) (*GenericResponse, error) {

@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// SiteSysInfo defines the site system info
 type SiteSysInfo struct {
 	AutoBackup                               bool        `json:"autobackup"`
 	Build                                    string      `json:"build"`
@@ -48,11 +49,14 @@ type SiteSysInfo struct {
 	Version                                  string      `json:"version"`
 }
 
+// SiteSysInfoResponse contains the site system info response
 type SiteSysInfoResponse struct {
 	Meta CommonMeta    `json:"meta"`
 	Data []SiteSysInfo `json:"data"`
 }
 
+// SiteSysInfo returns the site system info
+// site - the site to query
 func (c *Client) SiteSysInfo(site string) (*SiteSysInfoResponse, error) {
 	var resp SiteSysInfoResponse
 	err := c.doSiteRequest(http.MethodGet, site, "stat/sysinfo", nil, &resp)

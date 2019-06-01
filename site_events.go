@@ -8,8 +8,11 @@ import (
 	"time"
 )
 
+// EventSortOrder defines the sort order
 type EventSortOrder string
 
+// IsValid returns true if it's a valid sort order.
+// there are only a few valid types
 func (o EventSortOrder) IsValid() bool {
 	switch o {
 	case EventSortOrderTimeAscending, EventSortOrderTimeDescending:
@@ -19,13 +22,13 @@ func (o EventSortOrder) IsValid() bool {
 	}
 }
 
+// Common sort orders
 const (
 	EventSortOrderTimeDescending EventSortOrder = "-time"
 	EventSortOrderTimeAscending  EventSortOrder = "+time"
 )
 
-var InvalidSortOrderError = fmt.Errorf("invalid sort order")
-
+// SiteEventsEvent defines the site event data
 type SiteEventsEvent struct {
 	ID          string `json:"_id"`
 	AP          string `json:"ap"`
@@ -46,6 +49,7 @@ type SiteEventsEvent struct {
 	ChannelTo   string `json:"channel_to"`
 }
 
+// SiteEventsResponse contains the stat/event site events
 type SiteEventsResponse struct {
 	Meta CommonMeta        `json:"meta"`
 	Data []SiteEventsEvent `json:"data"`
@@ -69,7 +73,7 @@ func (c *Client) SiteEvents(site string, historyHours int, offset int, limit int
 	}
 
 	if !order.IsValid() {
-		return nil, InvalidSortOrderError
+		return nil, fmt.Errorf("invalid sort order: %s", order)
 	}
 
 	payload := map[string]interface{}{
@@ -110,7 +114,7 @@ func (c *Client) SiteIPSEvents(site string, startTime time.Time, endTime time.Ti
 	}
 
 	if !order.IsValid() {
-		return nil, InvalidSortOrderError
+		return nil, fmt.Errorf("invalid sort order: %s", order)
 	}
 
 	payload := map[string]interface{}{

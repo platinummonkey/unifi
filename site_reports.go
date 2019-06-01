@@ -8,15 +8,20 @@ import (
 	"time"
 )
 
+// SiteReport is the site report data
 type SiteReport map[string]interface{}
 
+// SiteReportsResponse contains the site report data
 type SiteReportsResponse struct {
 	Meta CommonMeta   `json:"meta"`
 	Data []SiteReport `json:"data"`
 }
 
+// ReportInterval is a defined report interval
+// there are only a few known intervals supported
 type ReportInterval string
 
+// The supported Report Intervals
 const (
 	ReportInterval5Min    ReportInterval = "5minutes"
 	ReportIntervalHourly  ReportInterval = "hourly"
@@ -24,7 +29,9 @@ const (
 	ReportIntervalArchive ReportInterval = "archive"
 )
 
-func (r ReportInterval) Valid() bool {
+// IsValid returns true if it's a valid report interval.
+// there are only a few valid types
+func (r ReportInterval) IsValid() bool {
 	switch r {
 	case ReportInterval5Min, ReportIntervalHourly, ReportIntervalDaily, ReportIntervalArchive:
 		return true
@@ -33,8 +40,10 @@ func (r ReportInterval) Valid() bool {
 	}
 }
 
+// ReportType defines the report type
 type ReportType string
 
+// The supported Report Types
 const (
 	ReportTypeSite      ReportType = "site"
 	ReportTypeUser      ReportType = "user"
@@ -42,7 +51,9 @@ const (
 	ReportTypeSpeedTest ReportType = "speedtest"
 )
 
-func (r ReportType) Valid() bool {
+// IsValid returns true if it's a valid report type.
+// there are only a few valid types
+func (r ReportType) IsValid() bool {
 	switch r {
 	case ReportTypeSite, ReportTypeUser, ReportTypeAP, ReportTypeSpeedTest:
 		return true
@@ -51,8 +62,10 @@ func (r ReportType) Valid() bool {
 	}
 }
 
+// ReportAttribute defines the report attribute
 type ReportAttribute string
 
+// Available report attributes
 const (
 	ReportAttributeBytes             ReportAttribute = "bytes"
 	ReportAttributeWANTXBytes        ReportAttribute = "wan-tx_bytes"
@@ -69,6 +82,8 @@ const (
 	ReportAttributeSpeedTestLatency  ReportAttribute = "latency"
 )
 
+// AllReportAttributes contains all the normal report attributes
+// the only known difference is the speed test report which should use SpeedTestReportAttributes
 var AllReportAttributes = []ReportAttribute{
 	ReportAttributeBytes,
 	ReportAttributeWANTXBytes,
@@ -82,6 +97,7 @@ var AllReportAttributes = []ReportAttribute{
 	ReportAttributeTXBytes,
 }
 
+// SpeedTestReportAttributes contains all the report attributes for the speed-test report
 var SpeedTestReportAttributes = []ReportAttribute{
 	ReportAttributeSpeedTestDownload,
 	ReportAttributeSpeedTestUpload,
@@ -89,7 +105,9 @@ var SpeedTestReportAttributes = []ReportAttribute{
 	ReportAttributeTime,
 }
 
-func (r ReportAttribute) Valid() bool {
+// IsValid returns true if it's a valid report attribute.
+// there are only a few valid types
+func (r ReportAttribute) IsValid() bool {
 	switch r {
 	case ReportAttributeBytes, ReportAttributeWANTXBytes, ReportAttributeWANRXBytes, ReportAttributeWLANBytes:
 		fallthrough
@@ -104,10 +122,12 @@ func (r ReportAttribute) Valid() bool {
 	}
 }
 
+// MarshalJSON implements json.Marshaler
 func (r ReportAttribute) MarshalJSON() ([]byte, error) {
 	return []byte(string(r)), nil
 }
 
+// UnmarshalJSON implements json.Unmarshaler
 func (r *ReportAttribute) UnmarshalJSON(data []byte) error {
 	*r = ReportAttribute(bytes.NewBuffer(data).String())
 	return nil
@@ -141,7 +161,7 @@ func (c *Client) SiteReport(site string, startTime time.Time, endTime time.Time,
 		return nil, fmt.Errorf("invalid end time, must occur after start time")
 	}
 
-	if !reportType.Valid() {
+	if !reportType.IsValid() {
 		return nil, fmt.Errorf("invalid reportType specified: %s", reportType)
 	}
 	// only archive is supported for speedtest, so override.
@@ -149,7 +169,7 @@ func (c *Client) SiteReport(site string, startTime time.Time, endTime time.Time,
 		interval = ReportIntervalArchive
 	}
 
-	if !interval.Valid() {
+	if !interval.IsValid() {
 		return nil, fmt.Errorf("invalid interval specified: %s", interval)
 	}
 
@@ -160,7 +180,7 @@ func (c *Client) SiteReport(site string, startTime time.Time, endTime time.Time,
 		}
 	} else {
 		for _, attr := range attributes {
-			if !attr.Valid() {
+			if !attr.IsValid() {
 				return nil, fmt.Errorf("invalid report attribute specified: %s", attr)
 			}
 		}
