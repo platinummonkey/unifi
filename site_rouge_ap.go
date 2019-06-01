@@ -38,6 +38,9 @@ type SiteRougeAccessPointResponse struct {
 	Data []SiteRougeAccessPoint `json:"data"`
 }
 
+// SiteRougeAccessPoints will list rouge/neighboring access points
+// site - site to query
+// withinHours - search within the last defined hours, defaults to 24 hours
 func (c *Client) SiteRougeAccessPoints(site string, seenWithinHours int) (*SiteRougeAccessPointResponse, error) {
 	if seenWithinHours < 0 {
 		seenWithinHours = 24
@@ -50,5 +53,13 @@ func (c *Client) SiteRougeAccessPoints(site string, seenWithinHours int) (*SiteR
 
 	var resp SiteRougeAccessPointResponse
 	err := c.doSiteRequest(http.MethodGet, site, "stat/rogueap", bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
+// SiteRougeKnownAccessPoints will list known rouge access points
+// site - site to query
+func (c *Client) SiteRougeKnownAccessPoints(site string) (*SiteRougeAccessPointResponse, error) {
+	var resp SiteRougeAccessPointResponse
+	err := c.doSiteRequest(http.MethodGet, site, "rest/rougeknown", nil, &resp)
 	return &resp, err
 }
