@@ -5,6 +5,7 @@ import (
 )
 
 // SiteCountryCode defines the country code data
+// note: follows `ISO-3166-1 Numeric` standard
 type SiteCountryCode struct {
 	Code interface{} `json:"code"` // sometimes string or int
 	Key  string      `json:"key"`

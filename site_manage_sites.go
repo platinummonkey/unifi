@@ -115,6 +115,7 @@ func (c *Client) SetSiteSNMP(site string, siteID string, configID string, commun
 	return &resp, err
 }
 
+// SiteManagementConfig defines a site managment configuration
 type SiteManagementConfig struct {
 	AdvancedFeatureEnabled *bool `json:"advanced_feature_enabled,omitempty"`
 	AlertEnabled           *bool `json:"alert_enabled,omitempty"`
@@ -156,7 +157,8 @@ func (c *Client) SetSiteManagementConfig(site string, siteID string, configID st
 	return &resp, err
 }
 
-type SiteGuessAccessConfig struct {
+// SiteGuestAccessConfig defines a site guest access configuration
+type SiteGuestAccessConfig struct {
 	Authentication              *string `json:"auth,omitempty"`
 	PortalCustomizedTOS         *string `json:"portal_customized_tos,omitempty"`
 	PortalCustomizedWelcomeText *string `json:"portal_customized_welcome_text,omitempty"`
@@ -171,7 +173,7 @@ type SiteGuessAccessConfig struct {
 // siteID - the site's controller id
 // configID - the existing guest_access _id configuration - available from SiteDetailedSettings
 // config - the SiteGuessAccessConfig settings
-func (c *Client) SetSiteGuestAccessConfig(site string, siteID string, configID string, config SiteGuessAccessConfig) (*GenericResponse, error) {
+func (c *Client) SetSiteGuestAccessConfig(site string, siteID string, configID string, config SiteGuestAccessConfig) (*GenericResponse, error) {
 	payload := map[string]interface{}{
 		"site_id": siteID,
 		"key":     "guest_access",
@@ -206,6 +208,7 @@ func (c *Client) SetSiteGuestAccessConfig(site string, siteID string, configID s
 	return &resp, err
 }
 
+// SiteNTPConfig defines the site NTP configuration
 type SiteNTPConfig struct {
 	NTPServer1 *string `json:"ntp_server_1,omitempty"`
 	NTPServer2 *string `json:"ntp_server_2,omitempty"`
