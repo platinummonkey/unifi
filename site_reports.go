@@ -9,6 +9,19 @@ import (
 )
 
 // SiteReport is the site report data
+/*type SiteReport struct {
+	// common
+	OID string `json:"oid"`
+	// site report
+	Site string `json:"site"`
+	// ap report
+	AccessPoint string `json:"ap"`
+	// user
+	???
+	// speedtest
+	SpeedTestID string `json:"_id"`
+    Origin string `json:"o"`
+}*/
 type SiteReport map[string]interface{}
 
 // SiteReportsResponse contains the site report data
