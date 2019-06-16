@@ -274,6 +274,89 @@ func (c *Client) GetSiteAdmins(site string) (*GenericResponse, error) {
 	return &resp, err
 }
 
+// InviteSiteAdmin will invite a new admin for access to the current site
+// site - the site to invite the admin to
+// name - name to assign to the admin user
+// email - email address to assign to the admin user (must be valid to validate)
+// disableSSO - set to true to disable SSO capability
+// readOnly - set to true to make the admin user read-only
+// deviceAdoptPermission - set to true to allow the new admin permissions to adopt devices.
+// deviceRestartPermission - set to true to allow the new admin permissions to restart devices.
+//
+// notes:
+//   - after issuing a valid request, an invite will be sent to the email address provided
+//   - issuing this command against an existing admin will trigger a "re-invite"
+func (c *Client) InviteSiteAdmin(site string, name string, email string, disableSSO bool, readOnly bool, deviceAdoptPermission bool, deviceRestartPermission bool) (*GenericResponse, error) {
+	permissions := make([]string, 0)
+	if deviceAdoptPermission {
+		permissions = append(permissions, "API_DEVICE_ADOPT")
+	}
+	if deviceRestartPermission {
+		permissions = append(permissions, "API_DEVICE_RESTART")
+	}
+	payload := map[string]interface{}{
+		"name":        strings.TrimSpace(name),
+		"email":       strings.TrimSpace(email),
+		"for_sso":     !disableSSO,
+		"cmd":         "invite-admin",
+		"role":        "admin",
+		"permissions": permissions,
+	}
+	if readOnly {
+		payload["role"] = "readonly"
+	}
+	data, _ := json.Marshal(payload)
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodPost, site, "cmd/sitemgr", bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
+// AssignExistingSiteAdmin will assign an existing site admin to the specified site
+// site - the site to invite the admin to
+// adminID - 24-char string _id of the site admin - from GetSiteAdmins
+// readOnly - set to true to make the admin user read-only
+// deviceAdoptPermission - set to true to allow the new admin permissions to adopt devices.
+// deviceRestartPermission - set to true to allow the new admin permissions to restart devices.
+func (c *Client) AssignExistingSiteAdmin(site string, adminID string, readOnly bool, deviceAdoptPermission bool, deviceRestartPermission bool) (*GenericResponse, error) {
+	permissions := make([]string, 0)
+	if deviceAdoptPermission {
+		permissions = append(permissions, "API_DEVICE_ADOPT")
+	}
+	if deviceRestartPermission {
+		permissions = append(permissions, "API_DEVICE_RESTART")
+	}
+	payload := map[string]interface{}{
+		"admin":       strings.TrimSpace(adminID),
+		"cmd":         "grant-admin",
+		"role":        "admin",
+		"permissions": permissions,
+	}
+	if readOnly {
+		payload["role"] = "readonly"
+	}
+	data, _ := json.Marshal(payload)
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodPost, site, "cmd/sitemgr", bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
+// RevokeSiteAdmin will revoke a site admin access
+// site - the site to invite the admin to
+// adminID - 24-char string _id of the site admin - from GetSiteAdmins
+func (c *Client) RevokeSiteAdmin(site string, adminID string) (*GenericResponse, error) {
+	payload := map[string]interface{}{
+		"admin": strings.TrimSpace(adminID),
+		"cmd":   "revoke-admin",
+	}
+	data, _ := json.Marshal(payload)
+
+	var resp GenericResponse
+	err := c.doSiteRequest(http.MethodPost, site, "cmd/sitemgr", bytes.NewReader(data), &resp)
+	return &resp, err
+}
+
 // MoveDevice will move a device from the current site to a new site.
 // site - site this device currently registered to
 // mac - the device mac
