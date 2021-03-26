@@ -91,5 +91,5 @@ type GeoCodeData struct {
 // this is used in the short term to provide quick functionality while they are more defined in experimentation/docs.
 type GenericResponse struct {
 	Meta CommonMeta             `json:"meta"`
-	Data map[string]interface{} `json:"data"`
+	Data []map[string]interface{} `json:"data"`
 }
